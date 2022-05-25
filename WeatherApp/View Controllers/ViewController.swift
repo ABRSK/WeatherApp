@@ -1,13 +1,13 @@
 //
-//  WeatherViewController.swift
+//  ViewController.swift
 //  WeatherApp
 //
-//  Created by Андрей Барсук on 25.05.2022.
+//  Created by Андрей Барсук on 24.05.2022.
 //
 
 import UIKit
 
-class WeatherViewController: UIViewController {
+class ViewController: UIViewController {
 
     @IBOutlet var currentWeatherView: UIView!
     @IBOutlet var sunriseSunsetView: UIView!
@@ -45,11 +45,10 @@ class WeatherViewController: UIViewController {
         currentWeatherView.alpha = 0
         sunriseSunsetView.alpha = 0
         futureWeatherView.alpha = 0
+        
         getWeather()
     }
-}
-
-extension WeatherViewController {
+    
     private func getWeather() {
         networkManager.fetchWeather(for: Link.moscow.rawValue) { currentWeather, dailyWeather in
             DispatchQueue.main.async {
@@ -65,14 +64,14 @@ extension WeatherViewController {
         weatherIconImageView.image = UIImage(named: getWeatherIcon(for: currentWeather.weathercode))
         currentWindSpeedLabel.text = "Wind speed: \(currentWeather.windspeed) Km/h"
         
-        sunriseTimeLabel.text = getLastFive(from: dailyWeather.sunrise[0])
-        sunsetTimeLabel.text = getLastFive(from: dailyWeather.sunset[0])
+        sunriseTimeLabel.text = getDateOrTime(from: dailyWeather.sunrise[0])
+        sunsetTimeLabel.text = getDateOrTime(from: dailyWeather.sunset[0])
         sunriseImageView.image = UIImage(named: "sunrise")
         sunsetImageView.image = UIImage(named: "sunset")
         
-        tomorrowDateLabel.text = getLastFive(from: dailyWeather.time[1])
-        afterTomorrowDateLabel.text = getLastFive(from: dailyWeather.time[2])
-        afterAfterTomorrowDateLabel.text = getLastFive(from: dailyWeather.time[3])
+        tomorrowDateLabel.text = getDateOrTime(from: dailyWeather.time[1])
+        afterTomorrowDateLabel.text = getDateOrTime(from: dailyWeather.time[2])
+        afterAfterTomorrowDateLabel.text = getDateOrTime(from: dailyWeather.time[3])
         
         tomorrowTemperatureLabel.text = "\(dailyWeather.temperature_2m_min[1])° / \(dailyWeather.temperature_2m_max[1])°"
         afterTomorrowTemperatureLabel.text = "\(dailyWeather.temperature_2m_min[2])° / \(dailyWeather.temperature_2m_max[2])"
@@ -117,8 +116,8 @@ extension WeatherViewController {
         return nameOfIcon
     }
     
-    private func getLastFive(from string: String) -> String {
-        let lastFive = string.suffix(5)
-        return String(lastFive)
+    private func getDateOrTime(from string: String) -> String {
+        let dateOrTime = string.suffix(5)
+        return String(dateOrTime)
     }
 }
