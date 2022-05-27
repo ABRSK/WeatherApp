@@ -10,25 +10,38 @@ enum Link: String {
 }
 
 struct Weather: Decodable {
-    let current_weather: CurrentWeather
+    let currentWeather: CurrentWeather
     let daily: DailyWeather
 }
 
 struct CurrentWeather: Decodable {
-    let windspeed: Float
-    let weathercode: Int
-    let temperature: Float
+    let windspeed: Double?
+    let weatherCode: Int?
+    let temperature: Double?
+    
+    init(from currentWeatherData: [String: Any]) {
+        windspeed = currentWeatherData["windspeed"] as? Double
+        weatherCode = currentWeatherData["weathercode"] as? Int
+        temperature = currentWeatherData["temperature"] as? Double
+    }
 }
 
 struct DailyWeather: Decodable {
-    let temperature_2m_min: [Float]
-    let sunset: [String]
-    let temperature_2m_max: [Float]
-    let time: [String]
-    let weathercode: [Int]
-    let sunrise: [String]
+    let temperatureMin: [Double]?
+    let sunset: [String]?
+    let temperatureMax: [Double]?
+    let time: [String]?
+    let weatherCode: [Int]?
+    let sunrise: [String]?
     
-    // date - weatherCodeIcon - minTemp - maxTemp
+    init(from dailyWeatherData: [String: Any]) {
+        temperatureMin = dailyWeatherData["temperature_2m_min"] as? [Double]
+        sunset = dailyWeatherData["sunset"] as? [String]
+        temperatureMax = dailyWeatherData["temperature_2m_max"] as? [Double]
+        time = dailyWeatherData["time"] as? [String]
+        weatherCode = dailyWeatherData["weathercode"] as? [Int]
+        sunrise = dailyWeatherData["sunrise"] as? [String]
+    }
 }
 
 enum WeatherIcon: Character {
@@ -55,4 +68,5 @@ enum WeatherIcon: Character {
 //85, 86    Snow showers slight and heavy
 //95 *    Thunderstorm: Slight or moderate
 //96, 99 *    Thunderstorm with slight and heavy hail
+
 
