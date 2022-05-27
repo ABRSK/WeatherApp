@@ -20,7 +20,7 @@ class NetworkManager {
     private init() {}
     
     func fetchWeather(from url: String, _ completion: @escaping(Result<Weather, NetworkError>) -> Void) {
-        guard let url = URL(string: url) else { return }
+//        guard let url = URL(string: url) else { return }
         
         AF.request(url)
             .validate()
