@@ -8,7 +8,7 @@
 import UIKit
 
 class WeatherViewController: UIViewController {
-
+    
     @IBOutlet var currentWeatherView: UIView!
     @IBOutlet var sunriseSunsetView: UIView!
     @IBOutlet var futureWeatherView: UIView!
@@ -35,52 +35,57 @@ class WeatherViewController: UIViewController {
     @IBOutlet var afterTomorrowImageView: UIImageView!
     @IBOutlet var afterAfterTomorrowImageView: UIImageView!
     
-    
     private var currentWeather: CurrentWeather!
     private var dailyWeather: DailyWeather!
     private let networkManager = NetworkManager.shared
+    
+    @IBOutlet var loadingIndicator: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         currentWeatherView.alpha = 0
         sunriseSunsetView.alpha = 0
         futureWeatherView.alpha = 0
+        loadingIndicator.hidesWhenStopped = true
         getWeather()
     }
 }
 
 extension WeatherViewController {
     private func getWeather() {
-        networkManager.fetchWeather(for: Link.moscow.rawValue) { currentWeather, dailyWeather in
-            DispatchQueue.main.async {
-                self.currentWeather = currentWeather
-                self.dailyWeather = dailyWeather
+        networkManager.fetchWeather(from: Link.moscow.rawValue) { result in
+            switch result {
+            case .success(let weather):
+                self.currentWeather = weather.currentWeather
+                self.dailyWeather = weather.daily
                 self.configureUI()
+            case .failure(let error):
+                print(error)
             }
         }
     }
     
     private func configureUI() {
-        currentTemperatureLabel.text = "\(currentWeather.temperature)°"
-        weatherIconImageView.image = UIImage(named: getWeatherIcon(for: currentWeather.weathercode))
-        currentWindSpeedLabel.text = "Wind speed: \(currentWeather.windspeed) Km/h"
+        currentTemperatureLabel.text = "\(currentWeather.temperature ?? 0)°"
+        weatherIconImageView.image = UIImage(named: getWeatherIcon(for: currentWeather.weatherCode ?? 0))
+        currentWindSpeedLabel.text = "Wind speed: \(currentWeather.windspeed ?? 0) Km/h"
         
-        sunriseTimeLabel.text = getLastFive(from: dailyWeather.sunrise[0])
-        sunsetTimeLabel.text = getLastFive(from: dailyWeather.sunset[0])
+        sunriseTimeLabel.text = getLastFive(from: dailyWeather.sunrise?[0] ?? "00:00")
+        sunsetTimeLabel.text = getLastFive(from: dailyWeather.sunset?[0] ?? "00:00")
         sunriseImageView.image = UIImage(named: "sunrise")
         sunsetImageView.image = UIImage(named: "sunset")
         
-        tomorrowDateLabel.text = getLastFive(from: dailyWeather.time[1])
-        afterTomorrowDateLabel.text = getLastFive(from: dailyWeather.time[2])
-        afterAfterTomorrowDateLabel.text = getLastFive(from: dailyWeather.time[3])
+        tomorrowDateLabel.text = getLastFive(from: dailyWeather.time?[1] ?? "01-01")
+        afterTomorrowDateLabel.text = getLastFive(from: dailyWeather.time?[2] ?? "01-01")
+        afterAfterTomorrowDateLabel.text = getLastFive(from: dailyWeather.time?[3] ?? "01-01")
         
-        tomorrowTemperatureLabel.text = "\(dailyWeather.temperature_2m_min[1])° / \(dailyWeather.temperature_2m_max[1])°"
-        afterTomorrowTemperatureLabel.text = "\(dailyWeather.temperature_2m_min[2])° / \(dailyWeather.temperature_2m_max[2])"
-        afterAfterTomorrowTemperatureLabel.text = "\(dailyWeather.temperature_2m_min[3])° / \(dailyWeather.temperature_2m_max[3])"
+        tomorrowTemperatureLabel.text = "\(dailyWeather.temperatureMin?[1] ?? 0)° / \(dailyWeather.temperatureMax?[1] ?? 0)°"
+        afterTomorrowTemperatureLabel.text = "\(dailyWeather.temperatureMin?[2] ?? 0)° / \(dailyWeather.temperatureMax?[2] ?? 0)"
+        afterAfterTomorrowTemperatureLabel.text = "\(dailyWeather.temperatureMin?[3] ?? 0)° / \(dailyWeather.temperatureMax?[3] ?? 0)"
         
-        tomorrowIconImageView.image = UIImage(named: getWeatherIcon(for: dailyWeather.weathercode[1]))
-        afterTomorrowImageView.image = UIImage(named: getWeatherIcon(for: dailyWeather.weathercode[2]))
-        afterAfterTomorrowImageView.image = UIImage(named: getWeatherIcon(for: dailyWeather.weathercode[3]))
+        tomorrowIconImageView.image = UIImage(named: getWeatherIcon(for: dailyWeather.weatherCode?[1] ?? 0))
+        afterTomorrowImageView.image = UIImage(named: getWeatherIcon(for: dailyWeather.weatherCode?[2] ?? 0))
+        afterAfterTomorrowImageView.image = UIImage(named: getWeatherIcon(for: dailyWeather.weatherCode?[3] ?? 0))
         
         let uiViews = [currentWeatherView, sunriseSunsetView, futureWeatherView]
         
@@ -90,6 +95,9 @@ extension WeatherViewController {
                 view?.alpha = 1
             }
         }
+        
+        loadingIndicator.stopAnimating()
+        
     }
     
     private func getWeatherIcon(for weatherCode: Int) -> String {
@@ -122,3 +130,4 @@ extension WeatherViewController {
         return String(lastFive)
     }
 }
+

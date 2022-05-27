@@ -271,6 +271,7 @@
                         <outlet property="currentWeatherView" destination="GFx-6E-IBP" id="w23-GR-5pb"/>
                         <outlet property="currentWindSpeedLabel" destination="eT0-Cs-yHi" id="csE-gc-jy7"/>
                         <outlet property="futureWeatherView" destination="YEW-mA-hXr" id="4eN-7v-711"/>
+                        <outlet property="loadingIndicator" destination="7IE-2B-M0I" id="hbF-eo-LmY"/>
                         <outlet property="sunriseImageView" destination="xyz-CJ-Yuk" id="z8u-TV-5hk"/>
                         <outlet property="sunriseSunsetView" destination="QLq-F3-xZU" id="qwD-HU-NSa"/>
                         <outlet property="sunriseTimeLabel" destination="bPI-S7-WY0" id="MmJ-sK-OZK"/>
